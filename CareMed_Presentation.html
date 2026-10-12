@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CareMed: A Smart Medication Assistant for Alzheimer's Patients</title>
+<style>
+:root{--bg:#f6f8f7;--ink:#10302f;--muted:#4c6664;--accent:#0f766e;--soft:#dcebe8;--warn:#b45309;--card:#ffffff;--line:#c9dad6}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1f1f;--ink:#e6f1ef;--muted:#9ab5b1;--accent:#5eead4;--soft:#173534;--warn:#fbbf24;--card:#132a29;--line:#25423f}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif;overflow:hidden}
+.deck{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth}
+section{min-height:100%;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;padding:6vh 8vw 8vh;max-width:1100px;margin:0 auto}
+h1,h2{font-family:Georgia,"Times New Roman",serif;font-weight:700;margin:0 0 .6em;line-height:1.15}
+h1{font-size:clamp(2.4rem,6vw,4.2rem)}
+h2{font-size:clamp(1.8rem,4vw,2.8rem);border-left:6px solid var(--accent);padding-left:.5em}
+p,li{font-size:clamp(1.05rem,1.8vw,1.35rem);line-height:1.55}
+p{margin:0 0 1em;max-width:62ch}
+.lead{color:var(--muted);font-size:clamp(1.2rem,2.4vw,1.7rem)}
+ul{margin:0 0 1em;padding-left:1.2em}
+li{margin-bottom:.5em}
+li::marker{color:var(--accent)}
+.title{align-items:flex-start}
+.title .tag{display:inline-block;background:var(--soft);color:var(--accent);padding:.3em .8em;border-radius:99px;font-weight:600;margin-bottom:1.2em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2em 1.4em}
+.card h3{margin:0 0 .4em;color:var(--accent);font-size:1.25rem}
+.card p{margin:0}
+ol.steps{list-style:none;padding:0;counter-reset:s}
+ol.steps li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.55em .9em}
+ol.steps li::before{content:counter(s);flex:none;width:1.9em;height:1.9em;border-radius:50%;background:var(--accent);color:var(--bg);font-weight:700;display:grid;place-items:center;font-size:.95em}
+.chat{display:flex;flex-direction:column;gap:10px;max-width:640px}
+.msg{padding:.6em 1em;border-radius:12px;font-size:clamp(1rem,1.7vw,1.25rem);line-height:1.45}
+.app{background:var(--soft);border:1px solid var(--line);align-self:flex-start}
+.pat{background:var(--accent);color:var(--bg);align-self:flex-end}
+.who{display:block;font-size:.75em;font-weight:700;opacity:.8;margin-bottom:.15em}
+.ok{color:var(--accent);font-weight:700}
+.alert{border-left:6px solid var(--warn);background:var(--card);padding:.8em 1.1em;border-radius:8px;max-width:62ch}
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:1em}
+.flow span{background:var(--accent);color:var(--bg);padding:.45em .9em;border-radius:8px;font-weight:600}
+.flow i{font-style:normal;color:var(--muted);font-weight:700}
+.cases{display:grid;gap:14px}
+.case{display:grid;grid-template-columns:minmax(150px,1fr) 2fr;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.8em 1.1em;align-items:center}
+.case b{color:var(--accent)}
+.case div{font-size:clamp(1rem,1.7vw,1.25rem)}
+@media(max-width:600px){.case{grid-template-columns:1fr;gap:4px}section{padding:5vh 6vw 9vh}}
+nav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);padding:6px 10px;border-radius:99px;z-index:5}
+nav button{background:var(--accent);color:var(--bg);border:0;border-radius:99px;width:34px;height:34px;font-size:18px;cursor:pointer}
+nav button:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+nav span{min-width:56px;text-align:center;font-variant-numeric:tabular-nums;color:var(--muted)}
+@media(prefers-reduced-motion:reduce){.deck{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<main class="deck" id="deck">
+
+<section class="title">
+  <span class="tag">Project presentation</span>
+  <h1>CareMed</h1>
+  <p class="lead">A smart app that helps Alzheimer's patients remember their medication and tracks how they respond.</p>
+</section>
+
+<section>
+  <h2>The Problem</h2>
+  <p>Alzheimer's patients may struggle to:</p>
+  <ul>
+    <li>Remember when to take their medication.</li>
+    <li>Remember whether they already took it.</li>
+    <li>Follow instructions in order, such as eating before taking a pill.</li>
+    <li>Use complicated mobile apps.</li>
+  </ul>
+  <p>Meanwhile, the family may not find out in time whether the patient took the medication.</p>
+</section>
+
+<section>
+  <h2>The Solution</h2>
+  <p>CareMed is a simple app that works with the patient through alerts and voice interaction instead of relying on screen use.</p>
+  <ul>
+    <li>Reminds the patient when a medication is due.</li>
+    <li>Explains what to do before taking it.</li>
+    <li>Asks by voice whether the step was done.</li>
+    <li>Checks the patient's response.</li>
+    <li>Alerts the caregiver if there is no response.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Who Uses the App?</h2>
+  <div class="grid">
+    <div class="card"><h3>The caregiver</h3><p>Enters the patient's details, medications, schedules, and a contact number.</p></div>
+    <div class="card"><h3>The patient</h3><p>Receives alerts and responds by voice, with no need to navigate the phone in a complicated way.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Setting Up the Patient Account</h2>
+  <p>To begin, the caregiver enters:</p>
+  <ul>
+    <li>The patient's name.</li>
+    <li>The caregiver's contact number.</li>
+    <li>The name of each medication.</li>
+    <li>The time each medication is due.</li>
+    <li>Whether the patient must eat before taking it.</li>
+    <li>How long to wait for the patient's response.</li>
+  </ul>
+  <p>Once saved, the app starts monitoring automatically.</p>
+</section>
+
+<section>
+  <h2>How the App Works</h2>
+  <ol class="steps">
+    <li>The medication time arrives.</li>
+    <li>The app sends the patient a voice alert.</li>
+    <li>If the medication needs food, it asks the patient to eat first.</li>
+    <li>It asks: "Did you eat your meal? Say yes or no."</li>
+    <li>Once confirmed, it tells the patient it is time for the medication.</li>
+    <li>It asks: "Did you take the medication? Say yes or no."</li>
+    <li>It records the result.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Voice Interaction</h2>
+  <p>The patient does not have to search inside the app or deal with many menus.</p>
+  <div class="chat">
+    <div class="msg app"><span class="who">App</span>"Did you take your blood pressure medication? Say yes or no."</div>
+    <div class="msg pat"><span class="who">Patient</span>"Yes."</div>
+    <div class="msg app"><span class="who">App</span>Records that the dose was confirmed.</div>
+  </div>
+  <p style="margin-top:1em">If the patient says something else: "Please answer with one of two words: yes or no."</p>
+</section>
+
+<section>
+  <h2>If the Patient Says No</h2>
+  <ul>
+    <li>The app does not record the dose as taken.</li>
+    <li>It reminds the patient to take the medication.</li>
+    <li>It checks again after the set waiting time.</li>
+  </ul>
+  <p>The goal is to give the patient a chance to respond, rather than treating the dose as missed right away.</p>
+</section>
+
+<section>
+  <h2>If the Patient Does Not Respond</h2>
+  <p>The app repeats the alert or question, based on the settings.</p>
+  <p>If the set time passes with no response, the app sends an alert to the caregiver.</p>
+  <div class="alert">Example: "Blood pressure medication was not confirmed at the scheduled time."</div>
+</section>
+
+<section>
+  <h2>A Complete Scenario</h2>
+  <div class="chat">
+    <p class="lead" style="margin:0">2:00 PM. Medication time.</p>
+    <div class="msg app"><span class="who">App</span>"It is time to eat your meal before your medication."</div>
+    <div class="msg app"><span class="who">App</span>"Did you eat your meal? Say yes or no."</div>
+    <div class="msg pat"><span class="who">Patient</span>"Yes."</div>
+    <div class="msg app"><span class="who">App</span>"It is now time for your blood pressure medication. Did you take it? Say yes or no."</div>
+    <div class="msg pat"><span class="who">Patient</span>"Yes."</div>
+    <p class="ok" style="margin:0">The dose was recorded successfully.</p>
+  </div>
+</section>
+
+<section>
+  <h2>What Happens When There Is a Problem?</h2>
+  <div class="cases">
+    <div class="case"><b>Patient says "no"</b><div>The patient is reminded and followed up.</div></div>
+    <div class="case"><b>Anything other than yes or no</b><div>The app asks for one of the two words.</div></div>
+    <div class="case"><b>No reply</b><div>The alert is repeated based on the settings.</div></div>
+    <div class="case"><b>Still no reply</b><div>An alert goes to the caregiver.</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>The Result</h2>
+  <p>CareMed helps by:</p>
+  <ul>
+    <li>Reminding the patient of medication times.</li>
+    <li>Simplifying use of the app through voice.</li>
+    <li>Tracking the patient's responses.</li>
+    <li>Helping the family see which cases need follow-up.</li>
+  </ul>
+  <p><b>The core idea:</b></p>
+  <div class="flow"><span>Reminder</span><i>&rarr;</i><span>Voice question</span><i>&rarr;</i><span>Response</span><i>&rarr;</i><span>Record</span><i>&rarr;</i><span>Family alert if needed</span></div>
+</section>
+
+</main>
+
+<nav aria-label="Slide navigation">
+  <button id="prev" aria-label="Previous slide">&#8249;</button>
+  <span id="count">1 / 12</span>
+  <button id="next" aria-label="Next slide">&#8250;</button>
+</nav>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck'),slides=deck.querySelectorAll('section'),count=document.getElementById('count'),i=0;
+  function go(n){i=Math.max(0,Math.min(slides.length-1,n));slides[i].scrollIntoView();}
+  function update(){i=Math.round(deck.scrollTop/deck.clientHeight);count.textContent=(i+1)+' / '+slides.length;}
+  deck.addEventListener('scroll',update);
+  document.getElementById('prev').onclick=function(){go(i-1)};
+  document.getElementById('next').onclick=function(){go(i+1)};
+  document.addEventListener('keydown',function(e){
+    if(['ArrowRight','ArrowDown','PageDown',' '].indexOf(e.key)>-1){e.preventDefault();go(i+1)}
+    if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key)>-1){e.preventDefault();go(i-1)}
+  });
+  update();
+})();
+</script>
+</body>
+</html>
